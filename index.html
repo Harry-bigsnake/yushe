@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>暴打遇蛇</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .beat-animation {
+            animation: beat 0.8s ease;
+        }
+        @keyframes beat {
+            0% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(0.9) rotate(6deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .ping-animation {
+            animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+        }
+        @keyframes ping {
+            75%, 100% { transform: scale(1.5); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-pink-100 via-white to-purple-100 text-gray-800">
+    <!-- 音效资源 -->
+    <audio id="beatAudio" src="https://www.soundjay.com/buttons/sounds/button-16.mp3" preload="auto"></audio>
+
+    <!-- Header -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row justify-between items-center">
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-pink-500 mb-2 sm:mb-0">
+                暴打遇蛇
+            </h1>
+            <nav class="flex space-x-2 sm:space-x-6 overflow-x-auto w-full sm:w-auto pb-2 sm:pb-0">
+                <button onclick="switchTab('about')" class="px-3 py-1 sm:px-0 sm:py-0 text-sm sm:text-base font-medium transition-colors whitespace-nowrap text-pink-500">
+                    关于遇蛇
+                </button>
+                <button onclick="switchTab('gallery')" class="px-3 py-1 sm:px-0 sm:py-0 text-sm sm:text-base font-medium transition-colors whitespace-nowrap hover:text-pink-500">
+                    暴打图集
+                </button>
+                <button onclick="switchTab('fun')" class="px-3 py-1 sm:px-0 sm:py-0 text-sm sm:text-base font-medium transition-colors whitespace-nowrap hover:text-pink-500">
+                    趣味内容
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
+        <!-- About Tab -->
+        <section id="aboutTab" class="max-w-3xl mx-auto space-y-6 fade-in">
+            <!-- 遇蛇的头像 -->
+            <div class="flex items-center justify-center mb-6">
+                <div class="relative group">
+                    <img
+                        src="https://i.imgur.com/your-avatar-url.jpg"
+                        alt="遇蛇"
+                        id="avatarImage"
+                        class="w-40 h-40 sm:w-48 sm:h-48 rounded-full object-cover shadow-lg border-4 border-pink-300 transform transition-transform duration-500 group-hover:scale-105"
+                        onerror="showError('头像加载失败')"
+                    />
+                </div>
+            </div>
+
+            <!-- 简介 -->
+            <div class="space-y-6">
+                <h2 class="text-3xl sm:text-4xl font-bold text-center">谁是"遇蛇"？</h2>
+                <div class="space-y-4 text-base sm:text-lg leading-relaxed">
+                    <p>
+                        遇蛇是一位沉迷于音游的资深玩家，每天都在《Phigros》《Muse Dash》《Arcaea》等游戏中疯狂刷分。他虽然不会写代码，但他能用最简单的工具制作出让人头皮发麻的高难度谱面。
+                    </p>
+                    <p>
+                        遇蛇经常在社交媒体上晒出自己在音游中的高分截图，并配上"这谱面太简单了"的凡尔赛式评论。于是，"暴打遇蛇"便成为了一种象征——代表大家对装逼行为的调侃与反击。
+                    </p>
+                </div>
+                <div class="flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-4 mt-6">
+                    <button
+                        onclick="handleBeatClick()"
+                        class="px-6 py-3 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-full font-semibold hover:shadow-lg transform hover:-translate-y-1 transition-all active:scale-95"
+                    >
+                        我要暴打他
+                    </button>
+                    <button
+                        onclick="switchTab('gallery')"
+                        class="px-6 py-3 border border-pink-500 text-pink-500 rounded-full font-semibold hover:bg-pink-100 transition-colors"
+                    >
+                        先看看再说
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Gallery Tab -->
+        <section id="galleryTab" class="max-w-5xl mx-auto hidden">
+            <h2 class="text-2xl sm:text-3xl font-bold text-center mb-6 sm:mb-8">暴打图集（仅供娱乐）</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6" id="galleryContainer">
+                <!-- 图片将通过JS动态加载 -->
+            </div>
+        </section>
+
+        <!-- Fun Tab -->
+        <section id="funTab" class="max-w-3xl mx-auto space-y-8 hidden">
+            <h2 class="text-2xl sm:text-3xl font-bold text-center mb-6">趣味内容</h2>
+            
+            <div class="bg-white p-5 sm:p-6 rounded-lg shadow-md">
+                <h3 class="text-xl font-semibold mb-3">暴打语录生成器</h3>
+                <div class="space-y-4">
+                    <div class="flex flex-col sm:flex-row gap-2">
+                        <input
+                            type="text"
+                            id="quoteInput"
+                            placeholder="比如：遇蛇"
+                            class="flex-grow px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-pink-300"
+                        />
+                        <button
+                            onclick="generateRandomQuote()"
+                            class="px-4 py-2 bg-pink-500 text-white rounded-md hover:bg-pink-600 transition-colors whitespace-nowrap"
+                        >
+                            生成语录
+                        </button>
+                    </div>
+                    <div id="quoteResult" class="mt-3 p-3 bg-pink-50 rounded-md border border-pink-200 hidden"></div>
+                </div>
+            </div>
+
+            <div class="bg-white p-5 sm:p-6 rounded-lg shadow-md">
+                <h3 class="text-xl font-semibold mb-3">暴打段子</h3>
+                <ul class="space-y-3" id="jokesList">
+                    <!-- 段子将通过JS动态加载 -->
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-6 mt-8">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-sm sm:text-base">
+                © <span id="currentYear"></span> 暴打遇蛇联盟 | 友情提示：请勿模仿暴力行为（除非他真的太装了）
+            </p>
+        </div>
+    </footer>
+
+    <!-- Modal for Image Preview -->
+    <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4 hidden">
+        <div class="relative max-w-4xl w-full">
+            <button
+                onclick="closeModal()"
+                class="absolute -top-10 right-0 text-white text-3xl font-bold hover:text-pink-300 transition-colors"
+            >
+                &times;
+            </button>
+            <div class="bg-white rounded-lg overflow-hidden">
+                <img id="modalImage" src="" alt="" class="w-full h-auto max-h-[80vh] object-contain">
+                <div class="p-4 bg-gray-100">
+                    <p id="modalCaption" class="text-gray-700"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Toast -->
+    <div id="errorToast" class="fixed bottom-4 right-4 bg-red-500 text-white px-4 py-2 rounded-md shadow-lg transform translate-y-16 transition-transform duration-300 z-50 hidden">
+        <p id="errorMessage"></p>
+    </div>
+
+    <script>
+        // 常量数据
+        const IMAGES = [
+            { id: '1', url: "https://picsum.photos/id/237/600/400", alt: "暴打图1" },
+            { id: '2', url: "https://picsum.photos/id/1005/600/400", alt: "暴打图2" },
+            { id: '3', url: "https://picsum.photos/id/1012/600/400", alt: "暴打图3" },
+            { id: '4', url: "https://picsum.photos/id/1027/600/400", alt: "暴打图4" }
+        ];
+
+        const QUOTES = [
+            "遇蛇又开始秀音游分数了，看我一招'节奏大师'！",
+            "遇蛇说他是音游王者，结果被发现他在《Phigros》里开了判定放宽。",
+            "有人问遇蛇会不会写游戏，他说：'我只会玩，但我能做出最难的谱面。'",
+            "遇蛇直播音游翻车，观众集体刷屏：王者也有今天！",
+            "遇蛇声称自己全连了某首地狱级曲目，结果网友发现他用了自动播放模式。"
+        ];
+
+        // DOM元素
+        const avatarImage = document.getElementById('avatarImage');
+        const beatAudio = document.getElementById('beatAudio');
+        const tabs = {
+            about: document.getElementById('aboutTab'),
+            gallery: document.getElementById('galleryTab'),
+            fun: document.getElementById('funTab')
+        };
+        const navButtons = document.querySelectorAll('nav button');
+        const galleryContainer = document.getElementById('galleryContainer');
+        const jokesList = document.getElementById('jokesList');
+        const quoteResult = document.getElementById('quoteResult');
+        const imageModal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        const modalCaption = document.getElementById('modalCaption');
+        const errorToast = document.getElementById('errorToast');
+        const errorMessage = document.getElementById('errorMessage');
+        const currentYear = document.getElementById('currentYear');
+
+        // 初始化
+        function init() {
+            // 设置当前年份
+            currentYear.textContent = new Date().getFullYear();
+            
+            // 加载图集
+            renderGallery();
+            
+            // 加载段子
+            renderJokes();
+            
+            // 默认显示about标签
+            switchTab('about');
+        }
+
+        // 切换标签页
+        function switchTab(tabName) {
+            // 隐藏所有标签页
+            Object.values(tabs).forEach(tab => {
+                tab.classList.add('hidden');
+                tab.classList.remove('fade-in');
+            });
+            
+            // 显示选中的标签页
+            tabs[tabName].classList.remove('hidden');
+            setTimeout(() => {
+                tabs[tabName].classList.add('fade-in');
+            }, 10);
+            
+            // 更新导航按钮样式
+            navButtons.forEach(button => {
+                if (button.textContent.trim() === ({
+                    about: '关于遇蛇',
+                    gallery: '暴打图集',
+                    fun: '趣味内容'
+                }[tabName])) {
+                    button.classList.add('text-pink-500');
+                    button.classList.remove('hover:text-pink-500');
+                } else {
+                    button.classList.remove('text-pink-500');
+                    button.classList.add('hover:text-pink-500');
+                }
+            });
+        }
+
+        // 播放音效并触发"被打"动画
+        function handleBeatClick() {
+            try {
+                // 播放音效
+                if (beatAudio) {
+                    beatAudio.currentTime = 0;
+                    beatAudio.play().catch(e => {
+                        console.error("音效播放失败:", e);
+                        showError('音效播放失败，请检查浏览器设置');
+                    });
+                }
+                
+                // 触发动画
+                avatarImage.classList.add('beat-animation');
+                
+                // 添加打击效果
+                const pingEffect = document.createElement('div');
+                pingEffect.className = 'absolute inset-0 flex items-center justify-center';
+                pingEffect.innerHTML = '<div class="ping-animation absolute h-32 w-32 rounded-full bg-red-400 opacity-75"></div>';
+                avatarImage.parentNode.insertBefore(pingEffect, avatarImage.nextSibling);
+                
+                // 移除动画类
+                setTimeout(() => {
+                    avatarImage.classList.remove('beat-animation');
+                    if (avatarImage.nextSibling === pingEffect) {
+                        avatarImage.parentNode.removeChild(pingEffect);
+                    }
+                }, 800);
+            } catch (err) {
+                console.error("动画错误:", err);
+                showError('动画效果出错');
+            }
+        }
+
+        // 渲染图集
+        function renderGallery() {
+            galleryContainer.innerHTML = IMAGES.map(image => `
+                <div class="overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer group" onclick="openModal('${image.url}', '${image.alt}')">
+                    <img src="${image.url}" alt="${image.alt}" class="w-full h-48 sm:h-64 object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" onerror="showError('图片加载失败')">
+                    <div class="p-3 bg-white">
+                        <p class="text-sm text-gray-600">${image.alt}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 渲染段子
+        function renderJokes() {
+            jokesList.innerHTML = QUOTES.map((quote, index) => `
+                <li class="flex items-start">
+                    <span class="inline-block bg-pink-100 text-pink-800 rounded-full px-2 py-1 text-xs mr-2 mt-1">#${index + 1}</span>
+                    <span class="text-gray-700">${quote}</span>
+                </li>
+            `).join('');
+        }
+
+        // 打开模态框
+        function openModal(imageUrl, caption) {
+            modalImage.src = imageUrl;
+            modalImage.alt = caption;
+            modalCaption.textContent = caption;
+            imageModal.classList.remove('hidden');
+        }
+
+        // 关闭模态框
+        function closeModal() {
+            imageModal.classList.add('hidden');
+        }
+
+        // 生成随机语录
+        function generateRandomQuote() {
+            const input = document.getElementById('quoteInput').value.trim() || '遇蛇';
+            const randomIndex = Math.floor(Math.random() * QUOTES.length);
+            const quote = QUOTES[randomIndex].replace(/遇蛇/g, input);
+            
+            quoteResult.textContent = quote;
+            quoteResult.classList.remove('hidden');
+            quoteResult.classList.add('fade-in');
+        }
+
+        // 显示错误提示
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorToast.classList.remove('hidden');
+            errorToast.classList.remove('translate-y-16');
+            errorToast.classList.add('translate-y-0');
+            
+            setTimeout(() => {
+                errorToast.classList.add('translate-y-16');
+                errorToast.classList.remove('translate-y-0');
+                setTimeout(() => {
+                    errorToast.classList.add('hidden');
+                }, 300);
+            }, 3000);
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
